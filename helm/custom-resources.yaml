@@ -1,0 +1,62 @@
+apiVersion: apisix.apache.org/v2
+kind: ApisixClusterConfig
+metadata:
+  name: default
+spec:
+  monitoring:
+    prometheus:
+      enable: true
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixUpstream
+metadata:
+  name: echo
+  namespace: apisix
+spec:
+  scheme: http
+  loadbalancer:
+    type: ewma
+  discovery:
+    type: dns
+    serviceName: echo.echo
+  timeout:
+    connect: 6s
+    send: 6s
+    read: 6s
+  passHost: pass
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: echo
+  namespace: apisix
+spec:
+  http:
+    - name: echo-route
+      match:
+        methods:
+          - GET
+          - POST
+          - DELETE
+          - PUT
+          - PATCH
+          - OPTIONS
+        paths:
+          - /echo/*
+      upstreams:
+        - name: echo
+      plugin_config_name: echo
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixPluginConfig
+metadata:
+  name: echo
+  namespace: apisix
+spec:
+  plugins:
+    - name: proxy-rewrite
+      enable: true
+      config:
+        regex_uri:
+          - "/echo(/|$)(.*)"
+          - "/$2"
