@@ -34,4 +34,27 @@ spec:
           - /users
       upstreams:
         - name: {{ .Chart.Name }}
-
+      plugins:
+        - name: limit-count
+          enable: true
+          config:
+            count: 2
+            time_window: 60
+            rejected_code: 503
+            rejected_msg: "Requests are too many, please try again later or upgrade your subscription plan."
+            key: "remote_addr"
+        - name: basic-auth
+          enable: true
+          config:
+            hide_credentials: true
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixConsumer
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  authParameter:
+    basicAuth:
+      value:
+        username: toto
+        password: password
