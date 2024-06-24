@@ -1,0 +1,19 @@
+api-company:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      # cpu: 50m
+      memory: 256Mi
+  port: 3000
+
+api-user:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      # cpu: 50m
+      memory: 128Mi
+  port: 3000

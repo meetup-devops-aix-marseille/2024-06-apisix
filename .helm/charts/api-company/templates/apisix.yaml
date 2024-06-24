@@ -1,24 +1,14 @@
 apiVersion: apisix.apache.org/v2
-kind: ApisixClusterConfig
-metadata:
-  name: default
-spec:
-  monitoring:
-    prometheus:
-      enable: true
----
-apiVersion: apisix.apache.org/v2
 kind: ApisixUpstream
 metadata:
-  name: echo
-  namespace: apisix
+  name: {{ .Chart.Name }}
 spec:
   scheme: http
   loadbalancer:
     type: ewma
   discovery:
     type: dns
-    serviceName: echo.echo
+    serviceName: {{ .Chart.Name }}.{{ .Release.Namespace}}:{{ .Values.port }}
   timeout:
     connect: 6s
     send: 6s
@@ -28,11 +18,10 @@ spec:
 apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
-  name: echo
-  namespace: apisix
+  name: {{ .Chart.Name }}
 spec:
   http:
-    - name: echo-route
+    - name: company-route
       match:
         methods:
           - GET
@@ -42,21 +31,20 @@ spec:
           - PATCH
           - OPTIONS
         paths:
-          - /echo/*
+          - /companies/*
       upstreams:
-        - name: echo
-      plugin_config_name: echo
+        - name: {{ .Chart.Name }}
+      plugin_config_name: {{ .Chart.Name }}
 ---
 apiVersion: apisix.apache.org/v2
 kind: ApisixPluginConfig
 metadata:
-  name: echo
-  namespace: apisix
+  name: {{ .Chart.Name }}
 spec:
   plugins:
     - name: proxy-rewrite
       enable: true
       config:
         regex_uri:
-          - "/echo(/|$)(.*)"
+          - "/companies(/|$)(.*)"
           - "/$2"

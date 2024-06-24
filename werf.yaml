@@ -1,0 +1,12 @@
+configVersion: 1
+project: meetup-apisix
+deploy:
+  helmRelease: meetup-apisix
+---
+image: api_user
+dockerfile: Dockerfile
+context: ./src/api-user
+---
+image: api_company
+dockerfile: Dockerfile
+context: ./src/api-company

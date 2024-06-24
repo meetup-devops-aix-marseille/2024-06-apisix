@@ -1,0 +1,37 @@
+apiVersion: apisix.apache.org/v2
+kind: ApisixUpstream
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  scheme: http
+  loadbalancer:
+    type: ewma
+  discovery:
+    type: dns
+    serviceName: {{ .Chart.Name }}.{{ .Release.Namespace}}:{{ .Values.port }}
+  timeout:
+    connect: 6s
+    send: 6s
+    read: 6s
+  passHost: pass
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  http:
+    - name: user-route
+      match:
+        methods:
+          - GET
+          - POST
+          - DELETE
+          - PUT
+          - PATCH
+          - OPTIONS
+        paths:
+          - /users
+      upstreams:
+        - name: {{ .Chart.Name }}
+

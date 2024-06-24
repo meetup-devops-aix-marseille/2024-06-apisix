@@ -1,0 +1,13 @@
+apiVersion: v2
+name: apisix-api
+version: 1.0.0
+dependencies:
+  - name: api-user
+    version: "1.0.0"
+    export-values: &export-values
+      - parent: werf
+        child: werf
+  - name: api-company
+    version: "1.0.0"
+    export-values: *export-values
+

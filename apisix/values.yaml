@@ -1,0 +1,52 @@
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: api.placeholder.com
+      paths:
+        - /
+  tls:
+    - secretName: api-placeholder-com-tls
+      hosts:
+        - api.placeholder.com
+
+apisix:
+  discovery:
+    enabled: true
+    registry:
+      kubernetes: {}
+      dns:
+        servers:
+          - 10.43.0.10:53 # CoreDNS service IP address
+
+rbac:
+  create: true
+
+dashboard:
+  enabled: true
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    hosts:
+      - host: dashboard.placeholder.com
+        paths:
+          - /
+    tls:
+      - secretName: dashboard-placeholder-com-tls
+        hosts:
+          - dashboard.placeholder.com
+  config:
+    authentication:
+      users:
+        - username: admin
+          password: meetup062024
+
+# -- Ingress controller configuration
+ingress-controller:
+  enabled: true
+  config:
+    apisix:
+      serviceNamespace: apisix # The namespace where the Apisix service is running
+      adminAPIVersion: "v3"
